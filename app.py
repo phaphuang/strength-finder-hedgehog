@@ -228,6 +228,87 @@ elif page == "Analysis & Visualization":
             {st.session_state.gemini_analysis}
             </div>
             """, unsafe_allow_html=True)
+            
+            # Add export functionality
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                # Create a plain text version for text file export
+                analysis_text = st.session_state.gemini_analysis
+                st.download_button(
+                    label="📄 Download as TXT",
+                    data=analysis_text,
+                    file_name="hedgehog_analysis.txt",
+                    mime="text/plain"
+                )
+            
+            with col2:
+                # Create an HTML version for HTML file export
+                current_date = pd.Timestamp.now().strftime("%Y-%m-%d")
+                html_content = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Hedgehog Analysis - {current_date}</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }}
+                        h1 {{ color: #1E3A8A; }}
+                        h2 {{ color: #2563EB; margin-top: 30px; }}
+                        .container {{ max-width: 800px; margin: 0 auto; }}
+                        .header {{ text-align: center; margin-bottom: 40px; }}
+                        .footer {{ text-align: center; margin-top: 50px; font-size: 0.8em; color: #6B7280; }}
+                        .analysis {{ background-color: #f8fafc; padding: 20px; border-radius: 5px; }}
+                        .section {{ margin-bottom: 30px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>Hedgehog Concept Analysis</h1>
+                            <p>Generated on {current_date}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>Your Passions</h2>
+                            <ul>
+                                {''.join([f'<li>{item}</li>' for item in st.session_state.passion])}
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>Your Strengths</h2>
+                            <ul>
+                                {''.join([f'<li>{item}</li>' for item in st.session_state.strength])}
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>Market Needs</h2>
+                            <ul>
+                                {''.join([f'<li>{item}</li>' for item in st.session_state.market_need])}
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>AI Analysis</h2>
+                            <div class="analysis">
+                                {st.session_state.gemini_analysis}
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>Based on Jim Collins' Hedgehog Concept from "Good to Great"</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                
+                st.download_button(
+                    label="📊 Download as HTML Report",
+                    data=html_content,
+                    file_name="hedgehog_analysis.html",
+                    mime="text/html"
+                )
 
 # Footer
 st.markdown("""
