@@ -69,9 +69,24 @@ if 'api_key_set' not in st.session_state:
 if 'show_venn' not in st.session_state:
     st.session_state.show_venn = False
 
-# Sidebar for navigation and API key
+# Initialize page in session state if not exists
+if 'page' not in st.session_state:
+    st.session_state.page = "Home"
+
+# Sidebar for navigation
 st.sidebar.markdown("<div class='section-header'>Navigation</div>", unsafe_allow_html=True)
-page = st.sidebar.radio("Go to", ["Home", "Your Profile", "Analysis & Visualization"])
+
+# Functions to change page
+def set_page(page_name):
+    st.session_state.page = page_name
+
+# Create sidebar navigation
+st.sidebar.button("🏠 Home", on_click=set_page, kwargs={"page_name": "Home"}, use_container_width=True)
+st.sidebar.button("👤 Your Profile", on_click=set_page, kwargs={"page_name": "Your Profile"}, use_container_width=True)
+st.sidebar.button("📊 Analysis & Visualization", on_click=set_page, kwargs={"page_name": "Analysis & Visualization"}, use_container_width=True)
+
+# Get current page
+page = st.session_state.page
 
 # Set API key from secrets.toml
 st.session_state.api_key_set = True
@@ -108,6 +123,12 @@ if page == "Home":
     </ol>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Add a spacer
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Next button to navigate to Profile page
+    st.button("Next: Your Profile", on_click=set_page, kwargs={"page_name": "Your Profile"})
 
 # Profile Page
 elif page == "Your Profile":
@@ -127,9 +148,19 @@ elif page == "Your Profile":
                         height=150, 
                         help="What activities do you love doing? What could you talk about for hours?")
     
-    if st.button("Save Passions"):
+    # Save passion function with page preservation
+    def save_passions():
         if passion_input:
+            # Save the data
             st.session_state.passion = [item.strip() for item in passion_input.split('\n') if item.strip()]
+            # Set the page to stay on profile
+            st.session_state.page = "Your Profile"
+            return True
+        return False
+    
+    # Save passions button
+    if st.button("Save Passions"):
+        if save_passions():
             st.success(f"Saved {len(st.session_state.passion)} passions!")
         else:
             st.warning("Please enter at least one passion.")
@@ -148,9 +179,19 @@ elif page == "Your Profile":
                          height=150,
                          help="What comes easily to you? What do people compliment you on?")
     
-    if st.button("Save Strengths"):
+    # Save strengths function with page preservation
+    def save_strengths():
         if strength_input:
+            # Save the data
             st.session_state.strength = [item.strip() for item in strength_input.split('\n') if item.strip()]
+            # Set the page to stay on profile
+            st.session_state.page = "Your Profile"
+            return True
+        return False
+    
+    # Save strengths button
+    if st.button("Save Strengths"):
+        if save_strengths():
             st.success(f"Saved {len(st.session_state.strength)} strengths!")
         else:
             st.warning("Please enter at least one strength.")
@@ -169,12 +210,28 @@ elif page == "Your Profile":
                             height=150,
                             help="What problems can you solve? What would people pay you to do?")
     
-    if st.button("Save Market Needs"):
+    # Save market needs function with page preservation
+    def save_market_needs():
         if market_need_input:
+            # Save the data
             st.session_state.market_need = [item.strip() for item in market_need_input.split('\n') if item.strip()]
+            # Set the page to stay on profile
+            st.session_state.page = "Your Profile"
+            return True
+        return False
+    
+    # Save market needs button
+    if st.button("Save Market Needs"):
+        if save_market_needs():
             st.success(f"Saved {len(st.session_state.market_need)} market needs!")
         else:
             st.warning("Please enter at least one market need.")
+    
+    # Add a spacer
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Next button to navigate to Analysis page
+    st.button("Next: Analysis & Visualization", on_click=set_page, kwargs={"page_name": "Analysis & Visualization"})
 
 # Analysis & Visualization Page
 elif page == "Analysis & Visualization":
